@@ -26,8 +26,6 @@ github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMo
 github.com/eager7/dogd v0.14.7/go.mod h1:Gk/O1ktRVW5Kao0RsnVXp3bWxeYQadqawZ1Im9HE78M=
 github.com/eager7/dogd v0.15.2 h1:gWy1qf20w7cxa94vZyR1hyCNrIZF5J+dbJkIERmytbI=
 github.com/eager7/dogd v0.15.2/go.mod h1:k9wIjgwnhbrAw+ruIPZ2tHZMzfFNdyUnORZZX7lqXGY=
-github.com/gcash/bchlog v0.0.0-20180913005452-b4f036f92fa6 h1:3pZvWJ8MSfWstGrb8Hfh4ZpLyZNcXypcGx2Ju4ZibVM=
-github.com/gcash/bchlog v0.0.0-20180913005452-b4f036f92fa6/go.mod h1:PpfmXTLfjRp7Tf6v/DCGTRXHz+VFbiRcsoUxi7HvwlQ=
 github.com/eager7/dogutil v0.0.0-20190625002603-800e62fe9aff/go.mod h1:zXSP0Fg2L52wpSEDApQDQMiSygnQiK5HDquDl0a5BHg=
 github.com/eager7/dogutil v0.0.0-20191012211144-98e73ec336ba/go.mod h1:nUIrcbbtEQdCsRwcp+j/CndDKMQE9Fi8p2F8cIZmIqI=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
