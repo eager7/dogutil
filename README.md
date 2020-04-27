@@ -1,4 +1,4 @@
-btcutil
+dogutil
 =======
 
 [![Build Status](http://img.shields.io/travis/eager7/dogutil.svg)](https://travis-ci.org/eager7/dogutil)
@@ -6,7 +6,7 @@ btcutil
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/eager7/dogutil)
 
-Package btcutil provides bitcoin-specific convenience functions and types.
+Package dogutil provides bitcoin-specific convenience functions and types.
 A comprehensive suite of tests is provided to ensure proper functionality.  See
 `test_coverage.txt` for the gocov coverage report.  Alternatively, if you are
 running a POSIX OS, you can run the `cov_report.sh` script for a real-time
@@ -46,5 +46,5 @@ verify the signature perform the following:
 
 ## License
 
-Package btcutil is licensed under the [copyfree](http://copyfree.org) ISC
+Package dogutil is licensed under the [copyfree](http://copyfree.org) ISC
 License.

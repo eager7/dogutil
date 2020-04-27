@@ -79,8 +79,8 @@ func TestUseBlockHash(t *testing.T) {
 		Index: 4321,
 	}
 
-	// btcutil.Address
-	addr, err := btcutil.DecodeAddress(testAddr, &chaincfg.MainNetParams)
+	// dogutil.Address
+	addr, err := dogutil.DecodeAddress(testAddr, &chaincfg.MainNetParams)
 	if err != nil {
 		t.Fatalf("Address decode failed: %s", err.Error())
 	}
