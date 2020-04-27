@@ -1,8 +1,8 @@
 gcs
 ==========
 
-[![Build Status](https://travis-ci.org/eager7/dogutil.svg?branch=master)](https://travis-ci.org/eager7/dogutil)
-(https://travis-ci.org/btcsuite/btcutil) [![ISC License]
+[![Build Status](http://img.shields.io/travis/eager7/dogutil.svg)]
+(https://travis-ci.org/eager7/dogutil) [![ISC License]
 (http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://godoc.org/github.com/eager7/dogutil/gcs?status.png)]
 (http://godoc.org/github.com/eager7/dogutil/gcs)

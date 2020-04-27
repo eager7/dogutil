@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package bchutil
+package dogutil
 
 import (
 	"bytes"
@@ -32,12 +32,13 @@ func (e OutOfRangeError) Error() string {
 // transactions on their first access so subsequent accesses don't have to
 // repeat the relatively expensive hashing operations.
 type Block struct {
-	msgBlock        *wire.MsgBlock  // Underlying MsgBlock
-	serializedBlock []byte          // Serialized bytes for the block
-	blockHash       *chainhash.Hash // Cached block hash
-	blockHeight     int32           // Height in the main block chain
-	transactions    []*Tx           // Transactions
-	txnsGenerated   bool            // ALL wrapped transactions generated
+	msgBlock                 *wire.MsgBlock  // Underlying MsgBlock
+	serializedBlock          []byte          // Serialized bytes for the block
+	serializedBlockNoWitness []byte          // Serialized bytes for block w/o witness data
+	blockHash                *chainhash.Hash // Cached block hash
+	blockHeight              int32           // Height in the main block chain
+	transactions             []*Tx           // Transactions
+	txnsGenerated            bool            // ALL wrapped transactions generated
 }
 
 // MsgBlock returns the underlying wire.MsgBlock for the Block.
@@ -68,6 +69,27 @@ func (b *Block) Bytes() ([]byte, error) {
 	return serializedBlock, nil
 }
 
+// BytesNoWitness returns the serialized bytes for the block with transactions
+// encoded without any witness data.
+func (b *Block) BytesNoWitness() ([]byte, error) {
+	// Return the cached serialized bytes if it has already been generated.
+	if len(b.serializedBlockNoWitness) != 0 {
+		return b.serializedBlockNoWitness, nil
+	}
+
+	// Serialize the MsgBlock.
+	var w bytes.Buffer
+	err := b.msgBlock.SerializeNoWitness(&w)
+	if err != nil {
+		return nil, err
+	}
+	serializedBlock := w.Bytes()
+
+	// Cache the serialized bytes and return them.
+	b.serializedBlockNoWitness = serializedBlock
+	return serializedBlock, nil
+}
+
 // Hash returns the block identifier hash for the Block.  This is equivalent to
 // calling BlockHash on the underlying wire.MsgBlock, however it caches the
 // result so subsequent calls are more efficient.
@@ -83,7 +105,7 @@ func (b *Block) Hash() *chainhash.Hash {
 	return &hash
 }
 
-// Tx returns a wrapped transaction (bchutil.Tx) for the transaction at the
+// Tx returns a wrapped transaction (btcutil.Tx) for the transaction at the
 // specified index in the Block.  The supplied index is 0 based.  That is to
 // say, the first transaction in the block is txNum 0.  This is nearly
 // equivalent to accessing the raw transaction (wire.MsgTx) from the
@@ -92,7 +114,7 @@ func (b *Block) Hash() *chainhash.Hash {
 func (b *Block) Tx(txNum int) (*Tx, error) {
 	// Ensure the requested transaction is in range.
 	numTx := uint64(len(b.msgBlock.Transactions))
-	if txNum < 0 || uint64(txNum) >= numTx {
+	if txNum < 0 || uint64(txNum) > numTx {
 		str := fmt.Sprintf("transaction index %d is out of range - max %d",
 			txNum, numTx-1)
 		return nil, OutOfRangeError(str)
@@ -115,10 +137,10 @@ func (b *Block) Tx(txNum int) (*Tx, error) {
 	return newTx, nil
 }
 
-// Transactions returns a slice of wrapped transactions (bchutil.Tx) for all
+// Transactions returns a slice of wrapped transactions (btcutil.Tx) for all
 // transactions in the Block.  This is nearly equivalent to accessing the raw
 // transactions (wire.MsgTx) in the underlying wire.MsgBlock, however it
-// instead provides easy access to wrapped versions (bchutil.Tx) of them.
+// instead provides easy access to wrapped versions (btcutil.Tx) of them.
 func (b *Block) Transactions() []*Tx {
 	// Return transactions if they have ALL already been generated.  This
 	// flag is necessary because the wrapped transactions are lazily

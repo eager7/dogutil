@@ -2,7 +2,7 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
-package bchutil
+package dogutil
 
 import (
 	"bytes"
@@ -22,19 +22,16 @@ import (
 )
 
 // NewTLSCertPair returns a new PEM-encoded x.509 certificate pair
-// based on a 256-bit ECDSA private key. The machine's local interface
+// based on a 521-bit ECDSA private key.  The machine's local interface
 // addresses and all variants of IPv4 and IPv6 localhost are included as
 // valid IP addresses.
-//
-// 256-bit ECDSA is chosen so a single cert can support both RPC and gRPC
-// connections when auto generating certificates in bchd.
 func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []string) (cert, key []byte, err error) {
 	now := time.Now()
 	if validUntil.Before(now) {
 		return nil, nil, errors.New("validUntil would create an already-expired certificate")
 	}
 
-	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	priv, err := ecdsa.GenerateKey(elliptic.P521(), rand.Reader)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -113,9 +110,8 @@ func NewTLSCertPair(organization string, validUntil time.Time, extraHosts []stri
 
 		KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature |
 			x509.KeyUsageCertSign,
+		IsCA: true, // so can sign self.
 		BasicConstraintsValid: true,
-
-		IsCA: true,
 
 		DNSNames:    dnsNames,
 		IPAddresses: ipAddresses,

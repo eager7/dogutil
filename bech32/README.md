@@ -1,7 +1,7 @@
 bech32
 ==========
 
-[![Build Status](https://travis-ci.org/eager7/dogutil.svg?branch=master)](https://travis-ci.org/eager7/dogutil)
+[![Build Status](http://img.shields.io/travis/eager7/dogutil.svg)](https://travis-ci.org/eager7/dogutil)
 [![ISC License](http://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
 [![GoDoc](https://godoc.org/github.com/eager7/dogutil/bech32?status.png)](http://godoc.org/github.com/eager7/dogutil/bech32)
 
@@ -9,9 +9,6 @@ Package bech32 provides a Go implementation of the bech32 format specified in
 [BIP 173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki).
 
 Test vectors from BIP 173 are added to ensure compatibility with the BIP.
-
-Note this package is NOT use by the CashAddress format as that uses a different bech32 encoding.
-It's left here for the sheer utility of having that package.
 
 ## Installation and Updating
 

@@ -3,20 +3,18 @@
 // license that can be found in the LICENSE file.
 
 /*
-This test file is part of the bchutil package rather than than the
-bchutil_test package so it can bridge access to the internals to properly test
+This test file is part of the btcutil package rather than than the
+btcutil_test package so it can bridge access to the internals to properly test
 cases which are either not possible or can't reliably be tested via the public
 interface. The functions are only exported while the tests are being run.
 */
 
-package bchutil
+package dogutil
 
 import (
-	"strings"
-
-	"github.com/eager7/dogd/bchec"
-	"github.com/eager7/dogd/chaincfg"
+	"github.com/eager7/dogd/btcec"
 	"github.com/eager7/dogutil/base58"
+	"github.com/eager7/dogutil/bech32"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -33,45 +31,49 @@ func TstAppDataDir(goos, appName string, roaming bool) string {
 	return appDataDir(goos, appName, roaming)
 }
 
-// TstAddressPubKeyHash makes a AddressPubKeyHash, setting the
+// TstAddressPubKeyHash makes an AddressPubKeyHash, setting the
 // unexported fields with the parameters hash and netID.
 func TstAddressPubKeyHash(hash [ripemd160.Size]byte,
-	params *chaincfg.Params) *AddressPubKeyHash {
+	netID byte) *AddressPubKeyHash {
+
 	return &AddressPubKeyHash{
-		hash:   hash,
-		prefix: params.CashAddressPrefix,
+		hash:  hash,
+		netID: netID,
 	}
 }
 
-// TstAddressScriptHash makes a AddressScriptHash, setting the
+// TstAddressScriptHash makes an AddressScriptHash, setting the
 // unexported fields with the parameters hash and netID.
 func TstAddressScriptHash(hash [ripemd160.Size]byte,
-	params *chaincfg.Params) *AddressScriptHash {
+	netID byte) *AddressScriptHash {
+
 	return &AddressScriptHash{
-		hash:   hash,
-		prefix: params.CashAddressPrefix,
-	}
-}
-
-// TstLegacyAddressPubKeyHash makes a LegacyAddressPubKeyHash, setting the
-// unexported fields with the parameters hash and netID.
-func TstLegacyAddressPubKeyHash(hash [ripemd160.Size]byte,
-	netID byte) *LegacyAddressPubKeyHash {
-
-	return &LegacyAddressPubKeyHash{
 		hash:  hash,
 		netID: netID,
 	}
 }
 
-// TstLegacyAddressScriptHash makes a LegacyAddressScriptHash, setting the
-// unexported fields with the parameters hash and netID.
-func TstLegacyAddressScriptHash(hash [ripemd160.Size]byte,
-	netID byte) *LegacyAddressScriptHash {
+// TstAddressWitnessPubKeyHash creates an AddressWitnessPubKeyHash, initiating
+// the fields as given.
+func TstAddressWitnessPubKeyHash(version byte, program [20]byte,
+	hrp string) *AddressWitnessPubKeyHash {
 
-	return &LegacyAddressScriptHash{
-		hash:  hash,
-		netID: netID,
+	return &AddressWitnessPubKeyHash{
+		hrp:            hrp,
+		witnessVersion: version,
+		witnessProgram: program,
+	}
+}
+
+// TstAddressWitnessScriptHash creates an AddressWitnessScriptHash, initiating
+// the fields as given.
+func TstAddressWitnessScriptHash(version byte, program [32]byte,
+	hrp string) *AddressWitnessScriptHash {
+
+	return &AddressWitnessScriptHash{
+		hrp:            hrp,
+		witnessVersion: version,
+		witnessProgram: program,
 	}
 }
 
@@ -80,28 +82,33 @@ func TstLegacyAddressScriptHash(hash [ripemd160.Size]byte,
 func TstAddressPubKey(serializedPubKey []byte, pubKeyFormat PubKeyFormat,
 	netID byte) *AddressPubKey {
 
-	pubKey, _ := bchec.ParsePubKey(serializedPubKey, bchec.S256())
+	pubKey, _ := btcec.ParsePubKey(serializedPubKey, btcec.S256())
 	return &AddressPubKey{
 		pubKeyFormat: pubKeyFormat,
-		pubKey:       pubKey,
+		pubKey:       (*btcec.PublicKey)(pubKey),
 		pubKeyHashID: netID,
 	}
 }
 
-// TstLegacyAddressSAddr returns the expected script address bytes for
-// P2PKH and P2SH legacy addresses.
-func TstLegacyAddressSAddr(addr string) []byte {
+// TstAddressSAddr returns the expected script address bytes for
+// P2PKH and P2SH bitcoin addresses.
+func TstAddressSAddr(addr string) []byte {
 	decoded := base58.Decode(addr)
 	return decoded[1 : 1+ripemd160.Size]
 }
 
-// TstAddressSAddr returns the expected script address bytes for
-// P2PKH and P2SH cashaddr addresses.
-func TstAddressSAddr(addr string, params *chaincfg.Params) []byte {
-	prefix := params.CashAddressPrefix
-	if !strings.HasPrefix(addr, prefix) {
-		addr = prefix + ":" + addr
+// TstAddressSegwitSAddr returns the expected witness program bytes for
+// bech32 encoded P2WPKH and P2WSH bitcoin addresses.
+func TstAddressSegwitSAddr(addr string) []byte {
+	_, data, err := bech32.Decode(addr)
+	if err != nil {
+		return []byte{}
 	}
-	decoded, _, _, _ := checkDecodeCashAddress(addr)
-	return decoded[:ripemd160.Size]
+
+	// First byte is version, rest is base 32 encoded data.
+	data, err = bech32.ConvertBits(data[1:], 5, 8, false)
+	if err != nil {
+		return []byte{}
+	}
+	return data
 }
